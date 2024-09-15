@@ -102,6 +102,7 @@
             this.txtFiltro.Name = "txtFiltro";
             this.txtFiltro.Size = new System.Drawing.Size(185, 20);
             this.txtFiltro.TabIndex = 8;
+            this.txtFiltro.TextChanged += new System.EventHandler(this.txtFiltro_TextChanged);
             // 
             // txtFiltroAvanzado
             // 
