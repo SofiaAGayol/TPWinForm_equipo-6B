@@ -58,7 +58,7 @@ namespace TPWinForm
             {
                 pictureBox1.Load(imagen);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 pictureBox1.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
             }

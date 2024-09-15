@@ -18,10 +18,10 @@ namespace dominio
         //public string Imagenes { get; set; } 
         public decimal Precio { get; set; }
 
-        public List<Imagenes> Imagenes { get; set; }
+        public List<Imagen> Imagenes { get; set; }
         public Articulo()
         {
-            Imagenes = new List<Imagenes>();
+            Imagenes  = new List<Imagen>();
         }
     }
 }
