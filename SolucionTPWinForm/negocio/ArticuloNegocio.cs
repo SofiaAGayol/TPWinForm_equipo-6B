@@ -14,63 +14,50 @@ namespace negocio
         public List<Articulo> listar()
         {
             List<Articulo> lista = new List<Articulo>();
-            SqlConnection conexion = new SqlConnection();
-            SqlCommand comando = new SqlCommand();
-            SqlDataReader lector;
+            AccesoDatos datos = new AccesoDatos();
 
             try
             {
 
-                conexion.ConnectionString = "server=.\\SQLEXPRESS; database=CATALOGO_P3_DB; integrated security=true";
-                comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "Select A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, A.IdCategoria,Precio,C.Id as IdC, C.Descripcion as DescripcionC, M.Id as IdM, M.Descripcion as DescripcionM,I.Id as IdIm, I.IdArticulo, I.ImagenUrl From ARTICULOS A, CATEGORIAS C, MARCAS M, IMAGENES I Where C.Id = A.IdCategoria And M.Id = A.IdMarca And I.IdArticulo = A.Id";
-                comando.Connection = conexion;
+                datos.setearConsulta("SELECT A.Id, A.Codigo, A.Nombre, A.Descripcion, A.IdMarca, A.Precio Precio, M.Descripcion AS NombreMarca, M.Id AS MarcaId, I.ImagenUrl AS imgURL, I.Id AS imgId, C.Descripcion AS CatNombre, C.Id AS CatID FROM ARTICULOS A, MARCAS M, IMAGENES I, CATEGORIAS C where A.IdMarca = M.Id and I.IdArticulo = A.Id and C.Id = A.Id;");
 
-                conexion.Open();
-                lector = comando.ExecuteReader();
 
-                while (lector.Read())
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
                 {
-                    int idArticulo = (int)lector["Id"];
+                    Articulo articulo = new Articulo();
+                    articulo.Id = (int)datos.Lector["Id"];
+                    articulo.Codigo = (string)datos.Lector["Codigo"];
+                    articulo.Nombre = (string)datos.Lector["Nombre"];
+                    articulo.Precio = (decimal)datos.Lector["Precio"];
+                    articulo.Descripcion = (string)datos.Lector["Descripcion"];
 
-                    // Buscar si el artículo ya existe en la lista
-                    Articulo articulo = lista.FirstOrDefault(a => a.Id == idArticulo);
+                    //Agrego la categoria
+                    articulo.Categoria = new Categoria();
+                    articulo.Categoria.Id = (int)datos.Lector["CatID"];
+                    articulo.Categoria.Nombre = (string)datos.Lector["CatNombre"];
 
-                    if (articulo == null)
-                    {
-                        articulo = new Articulo();
-                        articulo.Id = (int)lector["Id"];
-                        articulo.Codigo = (string)lector["Codigo"];
-                        articulo.Nombre = (string)lector["Nombre"];
-                        articulo.Descripcion = (string)lector["Descripcion"];
-                        articulo.Precio = (decimal)lector["Precio"];
+                    //Agrego la marca
+                    articulo.Marca = new Marca();
+                    articulo.Marca.Id = (int)datos.Lector["MarcaId"];
+                    articulo.Marca.Nombre = (string)datos.Lector["NombreMarca"];
 
-                        articulo.Imagenes = new List<Imagenes>();
+                    //Agrego la imagen
+                    articulo.Imagenes = new List<Imagen>();
+                    Imagen img = new Imagen();
 
-                        articulo.Marca = new Marca();
-                        articulo.Marca.Id = (int)lector["IdM"];
-                        articulo.Marca.Descripcion = (string)lector["DescripcionM"];
+                    img.Id = (int)datos.Lector["imgId"];
+                    img.ImgURL = (string)datos.Lector["imgURL"];
 
-                        articulo.Categoria = new Categoria();
-                        articulo.Categoria.Id = (int)lector["IdC"];
-                        articulo.Categoria.Descripcion = (string)lector["DescripcionC"];
-
-                        if (!(lector["IdIm"] is DBNull))
-                        {
-                            Imagenes imagen = new Imagenes();
-                            imagen.Id = (int)lector["IdIm"];
-                            imagen.IdArticulo = (int)lector["IdArticulo"];
-                            imagen.ImagenUrl = (string)lector["ImagenUrl"];
-
-                            articulo.Imagenes.Add(imagen);
-                        }
+                    articulo.Imagenes.Add(img);
 
 
-                        lista.Add(articulo);
-                    }
+
+                    lista.Add(articulo); 
                 }
 
-                conexion.Close();
+                datos.cerrarConexion();
                 return lista;
        
             }

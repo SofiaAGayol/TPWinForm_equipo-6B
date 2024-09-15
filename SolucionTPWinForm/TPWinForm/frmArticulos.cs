@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,22 +20,10 @@ namespace TPWinForm
         {
             InitializeComponent();
         }
-        
+
         private void frmArticulos_Load(object sender, EventArgs e)
         {
             cargar();
-        }
-
-        private int indiceImagenActual = 0;
-
-        private void dataGridView_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dataGridView.CurrentRow != null)
-            {
-                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-                cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
-                
-            }
         }
 
         private void cargar()
@@ -44,45 +33,91 @@ namespace TPWinForm
             {
                 listaArticulo = negocio.listar();
                 dataGridView.DataSource = listaArticulo;
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                //dataGridView.Columns["imagenes"].Visible = false;
+                dataGridView.Columns["Id"].Visible = false;
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
+            
+            
         }
 
-        private void cargarImagen(string imagen)
+        private void btnBusqueda_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
             try
             {
-                pictureBox1.Load(imagen);
+                imgArticulo.Load(seleccionado.Imagenes[0].ImgURL);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                pictureBox1.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
+
+                imgArticulo.Load("https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png");
             }
         }
 
-        private void btnSiguienteImagen_Click(object sender, EventArgs e)
+        private void agregarArtículoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-            if (seleccionado != null && seleccionado.Imagenes.Count > 0)
+            foreach( var item in Application.OpenForms)
             {
-                indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count; 
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                if (item.GetType() == typeof(frmAgregarArt))
+                    return;
             }
+
+            frmAgregarArt Ventana = new frmAgregarArt();
+            Ventana.Show();
+            
         }
 
-        private void btnImagenAnterior_Click(object sender, EventArgs e)
+        private void verArticuloToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-            if (seleccionado != null && seleccionado.Imagenes.Count > 0)
+            foreach (var item in Application.OpenForms)
             {
-                indiceImagenActual = (indiceImagenActual - 1 + seleccionado.Imagenes.Count) % seleccionado.Imagenes.Count;
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                if (item.GetType() == typeof(frmBuscarArt))
+                    return;
             }
+
+            frmBuscarArt Ventana = new frmBuscarArt();
+            Ventana.Show();
+        }
+
+        private void eliminarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (var item in Application.OpenForms)
+            {
+                if (item.GetType() == typeof(frmEliminar))
+                    return;
+            }
+
+            frmEliminar Ventana = new frmEliminar();
+            Ventana.Show();
+        }
+
+        private void modificarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+         
+            foreach (var item in Application.OpenForms)
+            {
+                if (item.GetType() == typeof(frmModificar))
+                    return;
+            }
+
+            frmModificar Ventana = new frmModificar();
+            Ventana.Show();
+        
         }
     }
-
 }
