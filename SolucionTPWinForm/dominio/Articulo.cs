@@ -21,7 +21,7 @@ namespace dominio
         public List<Imagenes> Imagenes { get; set; }
         public Articulo()
         {
-            Imagenes= new List<Imagenes>();
+            Imagenes = new List<Imagenes>();
         }
     }
 }

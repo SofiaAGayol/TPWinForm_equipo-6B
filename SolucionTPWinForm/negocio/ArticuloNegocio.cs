@@ -31,33 +31,43 @@ namespace negocio
 
                 while (lector.Read())
                 {
-                    Articulo articulo = new Articulo();
-                    articulo.Id = (int)lector["Id"];
-                    articulo.Codigo = (string)lector["Codigo"];
-                    articulo.Nombre = (string)lector["Nombre"];
-                    articulo.Descripcion = (string)lector["Descripcion"];
-                    articulo.Precio = (decimal)lector["Precio"];
+                    int idArticulo = (int)lector["Id"];
 
-                    articulo.Marca = new Marca();
-                    articulo.Marca.Id = (int)lector["IdM"];
-                    articulo.Marca.Descripcion = (string)lector["DescripcionM"];
-                    
-                    articulo.Categoria = new Categoria();
-                    articulo.Categoria.Id = (int)lector["IdC"];
-                    articulo.Categoria.Descripcion = (string)lector["DescripcionC"];
+                    // Buscar si el artículo ya existe en la lista
+                    Articulo articulo = lista.FirstOrDefault(a => a.Id == idArticulo);
 
-                    if (!(lector["IdIm"] is DBNull))
+                    if (articulo == null)
                     {
-                        Imagenes imagen = new Imagenes();
-                        imagen.Id = (int)lector["IdIm"];
-                        imagen.IdArticulo = (int)lector["IdArticulo"];
-                        imagen.ImagenUrl = (string)lector["ImagenUrl"];
-                        
-                        articulo.Imagenes.Add(imagen);
-                    }
-                       
+                        articulo = new Articulo();
+                        articulo.Id = (int)lector["Id"];
+                        articulo.Codigo = (string)lector["Codigo"];
+                        articulo.Nombre = (string)lector["Nombre"];
+                        articulo.Descripcion = (string)lector["Descripcion"];
+                        articulo.Precio = (decimal)lector["Precio"];
 
-                    lista.Add(articulo); 
+                        articulo.Imagenes = new List<Imagenes>();
+
+                        articulo.Marca = new Marca();
+                        articulo.Marca.Id = (int)lector["IdM"];
+                        articulo.Marca.Descripcion = (string)lector["DescripcionM"];
+
+                        articulo.Categoria = new Categoria();
+                        articulo.Categoria.Id = (int)lector["IdC"];
+                        articulo.Categoria.Descripcion = (string)lector["DescripcionC"];
+
+                        if (!(lector["IdIm"] is DBNull))
+                        {
+                            Imagenes imagen = new Imagenes();
+                            imagen.Id = (int)lector["IdIm"];
+                            imagen.IdArticulo = (int)lector["IdArticulo"];
+                            imagen.ImagenUrl = (string)lector["ImagenUrl"];
+
+                            articulo.Imagenes.Add(imagen);
+                        }
+
+
+                        lista.Add(articulo);
+                    }
                 }
 
                 conexion.Close();
