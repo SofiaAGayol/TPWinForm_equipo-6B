@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,10 +19,27 @@ namespace TPWinForm
         {
             InitializeComponent();
         }
-
+        
         private void frmArticulos_Load(object sender, EventArgs e)
         {
             cargar();
+            cboCampo.Items.Add("Número");
+            cboCampo.Items.Add("Nombre");
+            cboCampo.Items.Add("Descripción");
+        }
+
+        //IMAGENES
+
+        private int indiceImagenActual = 0;
+
+        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView.CurrentRow != null)
+            {
+                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+                cargarImagen(seleccionado.Imagenes[0].ImagenUrl);
+                
+            }
         }
 
         private void cargar()
@@ -33,91 +49,191 @@ namespace TPWinForm
             {
                 listaArticulo = negocio.listar();
                 dataGridView.DataSource = listaArticulo;
-                //dataGridView.Columns["imagenes"].Visible = false;
-                dataGridView.Columns["Id"].Visible = false;
+                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void cargarImagen(string imagen)
+        {
+            try
+            {
+                pictureBox1.Load(imagen);
+            }
+            catch (Exception)
+            {
+                pictureBox1.Load("https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png");
+            }
+        }
+
+        private void btnSiguienteImagen_Click(object sender, EventArgs e)
+        {
+            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+            if (seleccionado != null && seleccionado.Imagenes.Count > 0)
+            {
+                indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count; 
+                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+            }
+        }
+
+        private void btnImagenAnterior_Click(object sender, EventArgs e)
+        {
+            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+            if (seleccionado != null && seleccionado.Imagenes.Count > 0)
+            {
+                indiceImagenActual = (indiceImagenActual - 1 + seleccionado.Imagenes.Count) % seleccionado.Imagenes.Count;
+                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+            }
+        }
+
+        //FIN IMAGENES
+
+
+
+        //FILTRO
+
+        private void ocultarColumnas()
+        {
+            //dataGridView.Columns["Id"].Visible = false;
+        }
+
+        private bool validarFiltro()
+        {
+            if (cboCampo.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor, seleccione el campo para filtrar.");
+                return true;
+            }
+            if (cboCriterio.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor, seleccione el criterio para filtrar.");
+                return true;
+            }
+            if (cboCampo.SelectedItem.ToString() == "Número")
+            {
+                if (string.IsNullOrEmpty(txtFiltroAvanzado.Text))
+                {
+                    MessageBox.Show("Debes cargar el filtro para numéricos...");
+                    return true;
+                }
+                if (!(soloNumeros(txtFiltroAvanzado.Text)))
+                {
+                    MessageBox.Show("Solo nros para filtrar por un campo numérico...");
+                    return true;
+                }
+
+            }
+
+            return false;
+        }
+
+        private bool soloNumeros(string cadena)
+        {
+            foreach (char caracter in cadena)
+            {
+                if (!(char.IsNumber(caracter)))
+                    return false;
+            }
+            return true;
+        }
+
+        private void btnFiltro_Click(object sender, EventArgs e)
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            try
+            {
+                if (validarFiltro())
+                    return;
+
+                string campo = cboCampo.SelectedItem.ToString();
+                string criterio = cboCriterio.SelectedItem.ToString();
+                string filtro = txtFiltroAvanzado.Text;
+                dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-            
-            
+
         }
 
-        private void btnBusqueda_Click(object sender, EventArgs e)
+        private void txtFiltro_KeyPress(object sender, KeyPressEventArgs e)
         {
 
         }
 
-        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void txtFiltro_TextChanged(object sender, EventArgs e)
         {
+            List<Articulo> listaFiltrada;
+            string filtro = txtFiltro.Text;
+
+            if (filtro.Length >= 3)
+            {
+                listaFiltrada = listaArticulo.FindAll(x => x.Nombre.ToUpper().Contains(filtro.ToUpper()) || x.Descripcion.ToUpper().Contains(filtro.ToUpper()));
+            }
+            else
+            {
+                listaFiltrada = listaArticulo;
+            }
+
+            dataGridView.DataSource = null;
+            dataGridView.DataSource = listaFiltrada;
+            ocultarColumnas();
+        }
+
+        private void cboCampo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string opcion = cboCampo.SelectedItem.ToString();
+            if (opcion == "Número")
+            {
+                cboCriterio.Items.Clear();
+                cboCriterio.Items.Add("Mayor a");
+                cboCriterio.Items.Add("Menor a");
+                cboCriterio.Items.Add("Igual a");
+            }
+            else
+            {
+                cboCriterio.Items.Clear();
+                cboCriterio.Items.Add("Comienza con");
+                cboCriterio.Items.Add("Termina con");
+                cboCriterio.Items.Add("Contiene");
+            }
 
         }
 
-        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        //Vista detallada + buscar
+        private void dataGridView_DoubleClick(object sender, EventArgs e)
         {
             Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-            try
-            {
-                imgArticulo.Load(seleccionado.Imagenes[0].ImgURL);
-            }
-            catch (Exception)
-            {
 
-                imgArticulo.Load("https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png");
-            }
-        }
-
-        private void agregarArtículoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach( var item in Application.OpenForms)
-            {
-                if (item.GetType() == typeof(frmAgregarArt))
-                    return;
-            }
-
-            frmAgregarArt Ventana = new frmAgregarArt();
-            Ventana.Show();
-            
-        }
-
-        private void verArticuloToolStripMenuItem_Click(object sender, EventArgs e)
-        {
             foreach (var item in Application.OpenForms)
             {
-                if (item.GetType() == typeof(frmBuscarArt))
+                if (item.GetType() == typeof(frmArticuloDetalles))
                     return;
             }
 
-            frmBuscarArt Ventana = new frmBuscarArt();
+            frmArticuloDetalles Ventana = new frmArticuloDetalles() { articulo = seleccionado };
             Ventana.Show();
         }
 
-        private void eliminarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
+        private void btnAgregar_Click(object sender, EventArgs e)
         {
+
             foreach (var item in Application.OpenForms)
             {
-                if (item.GetType() == typeof(frmEliminar))
+                if (item.GetType() == typeof(frmAgregarArticulo))
                     return;
             }
 
-            frmEliminar Ventana = new frmEliminar();
+            frmAgregarArticulo Ventana = new frmAgregarArticulo();
             Ventana.Show();
         }
 
-        private void modificarArticuloToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-         
-            foreach (var item in Application.OpenForms)
-            {
-                if (item.GetType() == typeof(frmModificar))
-                    return;
-            }
-
-            frmModificar Ventana = new frmModificar();
-            Ventana.Show();
-        
-        }
+        //FIN FILTRO
     }
+
 }

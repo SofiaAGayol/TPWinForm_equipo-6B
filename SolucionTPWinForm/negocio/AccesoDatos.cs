@@ -46,13 +46,15 @@ namespace negocio
 
         }
 
-        public void ejecutarAccion()
+        public object ejecutarAccion()
         {
             comando.Connection = conexion;
             try
             {
                 conexion.Open();
-                comando.ExecuteNonQuery();
+ 
+
+                return comando.ExecuteScalar();
             }
             catch (Exception ex)
             {
@@ -70,6 +72,21 @@ namespace negocio
             if (lector != null)
                 lector.Close();
             conexion.Close();
+        }
+
+        //Devuelve el ID de Articulo
+        public object devolverIDArticulo()
+        {
+            object resultado;
+            using (SqlCommand comando = new SqlCommand("INSERT INTO ARTICULOS (Codigo, Nombre, Descripcion, Precio, IdMarca, IdCategoria) " +
+                             "VALUES (@Codigo, @Nombre, @Descripcion, @Precio, @IdMarca, @IdCategoria  )", conexion))
+            {
+                conexion.Open();
+                resultado = comando.ExecuteScalar();
+                conexion.Close();
+            }
+
+            return resultado;
         }
     }
 }
