@@ -174,6 +174,7 @@
             this.btnEliminarLogico.TabIndex = 18;
             this.btnEliminarLogico.Text = "Eliminar Lógico";
             this.btnEliminarLogico.UseVisualStyleBackColor = true;
+            this.btnEliminarLogico.Click += new System.EventHandler(this.btnEliminarLogico_Click);
             // 
             // btnEliminarFisico
             // 
@@ -183,6 +184,7 @@
             this.btnEliminarFisico.TabIndex = 17;
             this.btnEliminarFisico.Text = "Eliminar Físico";
             this.btnEliminarFisico.UseVisualStyleBackColor = true;
+            this.btnEliminarFisico.Click += new System.EventHandler(this.btnEliminarFisico_Click);
             // 
             // btnModificar
             // 

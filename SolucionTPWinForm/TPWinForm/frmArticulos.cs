@@ -244,7 +244,32 @@ namespace TPWinForm
             }
 
             frmModificarArticulo Ventana = new frmModificarArticulo() { articulo = seleccionado };
+
             Ventana.Show();
+        }
+
+        private void btnEliminarFisico_Click(object sender, EventArgs e)
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+
+
+            Articulo seleccionado;
+            seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+
+            negocio.eliminar(seleccionado.Id);
+            MessageBox.Show("Eliminado exitosamente");
+        }
+
+        private void btnEliminarLogico_Click(object sender, EventArgs e)
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+
+
+            Articulo seleccionado;
+            seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+
+            negocio.eliminarLogico(seleccionado.Id);
+            MessageBox.Show("Eliminado exitosamente");
         }
 
         //FIN FILTRO
