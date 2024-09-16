@@ -46,18 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmAgregarArticulo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmAgregarArticulo.Designer.cs">
-      <DependentUpon>frmAgregarArticulo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmArticuloDetalles.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmArticuloDetalles.Designer.cs">
-      <DependentUpon>frmArticuloDetalles.cs</DependentUpon>
-    </Compile>
     <Compile Include="frmArticulos.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,12 +54,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmAgregarArticulo.resx">
-      <DependentUpon>frmAgregarArticulo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmArticuloDetalles.resx">
-      <DependentUpon>frmArticuloDetalles.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="frmArticulos.resx">
       <DependentUpon>frmArticulos.cs</DependentUpon>
     </EmbeddedResource>

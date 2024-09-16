@@ -23,9 +23,12 @@ namespace TPWinForm
         private void frmArticulos_Load(object sender, EventArgs e)
         {
             cargar();
-            cboCampo.Items.Add("Número");
+            cboCampo.Items.Add("Id");
+            cboCampo.Items.Add("Codigo");
             cboCampo.Items.Add("Nombre");
-            cboCampo.Items.Add("Descripción");
+            cboCampo.Items.Add("Marca");
+            cboCampo.Items.Add("Precio");
+            cboCampo.Items.Add("Categoria");
         }
 
         //IMAGENES
@@ -37,7 +40,7 @@ namespace TPWinForm
             if (dataGridView.CurrentRow != null)
             {
                 Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-                cargarImagen(seleccionado.Imagenes[0].ImagenUrl);
+                cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
                 
             }
         }
@@ -61,11 +64,18 @@ namespace TPWinForm
         {
             try
             {
-                pictureBox1.Load(imagen);
+                if (Uri.IsWellFormedUriString(imagen, UriKind.Absolute))
+                {
+                    pictureBox1.Load(imagen);
+                }
+                else
+                {
+                    pictureBox1.Load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWN8hLKJungcUipWLReON9fse4yZcyB0rzNw&s");
+                }
             }
             catch (Exception)
             {
-                pictureBox1.Load("https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png");
+                pictureBox1.Load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWN8hLKJungcUipWLReON9fse4yZcyB0rzNw&s");
             }
         }
 
@@ -112,7 +122,7 @@ namespace TPWinForm
                 MessageBox.Show("Por favor, seleccione el criterio para filtrar.");
                 return true;
             }
-            if (cboCampo.SelectedItem.ToString() == "Número")
+            if (cboCampo.SelectedItem.ToString() == "Id" || cboCampo.SelectedItem.ToString() == "Precio")
             {
                 if (string.IsNullOrEmpty(txtFiltroAvanzado.Text))
                 {
@@ -145,13 +155,35 @@ namespace TPWinForm
             ArticuloNegocio negocio = new ArticuloNegocio();
             try
             {
-                if (validarFiltro())
+                if (cboCampo.SelectedItem.ToString() != "Marca" && cboCampo.SelectedItem.ToString() != "Categoria" && validarFiltro())
                     return;
 
+
+                string opcion = cboCampo.SelectedItem.ToString();
+                
                 string campo = cboCampo.SelectedItem.ToString();
-                string criterio = cboCriterio.SelectedItem.ToString();
-                string filtro = txtFiltroAvanzado.Text;
-                dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
+                string criterio;
+                string filtro; 
+                if (opcion == "Marca")
+                {
+                    criterio = cboCriterioAvanzado.SelectedItem.ToString();
+                    filtro = criterio;
+                    dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
+                }
+                else if (opcion == "Categoria")
+                {
+                    criterio = cmbCriterioCategoria.SelectedItem.ToString();
+                    filtro = criterio;
+                    dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
+                }
+                
+                else
+                {
+                    criterio = cboCriterio.SelectedItem.ToString();
+                    filtro = txtFiltroAvanzado.Text;
+                    dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
+                }
+                
 
             }
             catch (Exception ex)
@@ -187,50 +219,97 @@ namespace TPWinForm
 
         private void cboCampo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string opcion = cboCampo.SelectedItem.ToString();
-            if (opcion == "Número")
+            if (cboCampo != null && cboCampo.SelectedItem != null)
             {
-                cboCriterio.Items.Clear();
-                cboCriterio.Items.Add("Mayor a");
-                cboCriterio.Items.Add("Menor a");
-                cboCriterio.Items.Add("Igual a");
-            }
-            else
-            {
-                cboCriterio.Items.Clear();
-                cboCriterio.Items.Add("Comienza con");
-                cboCriterio.Items.Add("Termina con");
-                cboCriterio.Items.Add("Contiene");
+                string opcion = cboCampo.SelectedItem.ToString();
+
+
+
+                if (opcion == "Id" || opcion == "Precio")
+                {
+                    cboCriterio.Visible = true;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = false;
+
+                    cboCriterio.Items.Clear();
+
+                    txtFiltroAvanzado.Enabled = true;
+
+                    cboCriterio.Items.Add("Mayor a");
+                    cboCriterio.Items.Add("Menor a");
+                    cboCriterio.Items.Add("Igual a");
+                }
+                else if (opcion == "Marca")
+                {
+                    cboCriterio.Visible = false;
+                    cboCriterioAvanzado.Visible = true;
+                    cmbCriterioCategoria.Visible = false;
+
+                    MarcaNegocio marcaNegocio = new MarcaNegocio();
+                    cboCriterioAvanzado.Items.Clear();
+                    cboCriterioAvanzado.DataSource = marcaNegocio.listar();
+                    cboCriterioAvanzado.ValueMember = "Id";
+                    cboCriterioAvanzado.DisplayMember = "Descripcion";
+
+                    txtFiltroAvanzado.Enabled = false;
+
+                }
+                else if (opcion == "Categoria")
+                {
+                    cboCriterio.Visible = false;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = true;
+
+                    CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+                    cmbCriterioCategoria.Items.Clear();
+                    cmbCriterioCategoria.DataSource = categoriaNegocio.listar();
+                    cmbCriterioCategoria.ValueMember = "Id";
+                    cmbCriterioCategoria.DisplayMember = "Descripcion";
+
+                    txtFiltroAvanzado.Enabled = false;
+
+                }
+                else
+                {
+
+                    cboCriterio.Visible = true;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = false;
+
+                    cboCriterio.Items.Clear();
+
+                    txtFiltroAvanzado.Enabled = true;
+                    cboCriterio.Items.Add("Comienza con");
+                    cboCriterio.Items.Add("Termina con");
+                    cboCriterio.Items.Add("Contiene");
+                }
             }
 
         }
 
-        //Vista detallada + buscar
-        private void dataGridView_DoubleClick(object sender, EventArgs e)
+        private void btnLimpiarFiltros_Click(object sender, EventArgs e)
         {
-            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+                
+                cboCampo.SelectedIndex = -1;
 
-            foreach (var item in Application.OpenForms)
-            {
-                if (item.GetType() == typeof(frmArticuloDetalles))
-                    return;
-            }
+                
+                cboCriterio.DataSource = null;
+                cboCriterio.Items.Clear();
+                cboCriterio.Visible = true;
 
-            frmArticuloDetalles Ventana = new frmArticuloDetalles() { articulo = seleccionado };
-            Ventana.Show();
-        }
+                cmbCriterioCategoria.DataSource = null;
+                cmbCriterioCategoria.Items.Clear();
+                cboCriterioAvanzado.Visible = false;
+                
+                cmbCriterioCategoria.DataSource = null;
+                cmbCriterioCategoria.Items.Clear();
+                cmbCriterioCategoria.Visible = false; 
 
-        private void btnAgregar_Click(object sender, EventArgs e)
-        {
+                txtFiltroAvanzado.Text = string.Empty;
+                txtFiltroAvanzado.Enabled = false;
+            
+                cargar();
 
-            foreach (var item in Application.OpenForms)
-            {
-                if (item.GetType() == typeof(frmAgregarArticulo))
-                    return;
-            }
-
-            frmAgregarArticulo Ventana = new frmAgregarArticulo();
-            Ventana.Show();
         }
 
         //FIN FILTRO

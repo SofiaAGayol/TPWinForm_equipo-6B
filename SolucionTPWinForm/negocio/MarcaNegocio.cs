@@ -1,16 +1,15 @@
-﻿using System;
+﻿using dominio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using dominio;
 
 namespace negocio
 {
-   public class MarcaNegocio
+    public class MarcaNegocio
     {
-
         public List<Marca> listar()
         {
             List<Marca> lista = new List<Marca>();
@@ -18,16 +17,18 @@ namespace negocio
 
             try
             {
-                datos.setearConsulta("Select Id, Descripcion From MARCAS");
+                datos.setearConsulta("Select MIN(Id) as Id, Descripcion From MARCAS GROUP BY Descripcion");
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
+
                     Marca aux = new Marca();
                     aux.Id = (int)datos.Lector["Id"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
 
                     lista.Add(aux);
+
                 }
 
                 return lista;

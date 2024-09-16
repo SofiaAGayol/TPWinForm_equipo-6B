@@ -45,6 +45,9 @@
             this.btnEliminarFisico = new System.Windows.Forms.Button();
             this.btnModificar = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
+            this.cboCriterioAvanzado = new System.Windows.Forms.ComboBox();
+            this.cmbCriterioCategoria = new System.Windows.Forms.ComboBox();
+            this.btnLimpiarFiltros = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -57,7 +60,6 @@
             this.dataGridView.Size = new System.Drawing.Size(962, 348);
             this.dataGridView.TabIndex = 0;
             this.dataGridView.SelectionChanged += new System.EventHandler(this.dataGridView_SelectionChanged);
-            this.dataGridView.DoubleClick += new System.EventHandler(this.dataGridView_DoubleClick);
             // 
             // pictureBox1
             // 
@@ -104,6 +106,7 @@
             this.txtFiltro.Size = new System.Drawing.Size(185, 20);
             this.txtFiltro.TabIndex = 8;
             this.txtFiltro.TextChanged += new System.EventHandler(this.txtFiltro_TextChanged);
+            this.txtFiltro.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFiltro_KeyPress);
             // 
             // txtFiltroAvanzado
             // 
@@ -147,6 +150,7 @@
             this.cboCampo.Name = "cboCampo";
             this.cboCampo.Size = new System.Drawing.Size(121, 21);
             this.cboCampo.TabIndex = 21;
+            this.cboCampo.SelectedIndexChanged += new System.EventHandler(this.cboCampo_SelectedIndexChanged);
             // 
             // lblCampo
             // 
@@ -165,6 +169,7 @@
             this.btnFiltro.TabIndex = 19;
             this.btnFiltro.Text = "Buscar";
             this.btnFiltro.UseVisualStyleBackColor = true;
+            this.btnFiltro.Click += new System.EventHandler(this.btnFiltro_Click);
             // 
             // btnEliminarLogico
             // 
@@ -201,13 +206,45 @@
             this.btnAgregar.TabIndex = 15;
             this.btnAgregar.Text = "Agregar";
             this.btnAgregar.UseVisualStyleBackColor = true;
-            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
+            // 
+            // cboCriterioAvanzado
+            // 
+            this.cboCriterioAvanzado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboCriterioAvanzado.FormattingEnabled = true;
+            this.cboCriterioAvanzado.Location = new System.Drawing.Point(536, 78);
+            this.cboCriterioAvanzado.Name = "cboCriterioAvanzado";
+            this.cboCriterioAvanzado.Size = new System.Drawing.Size(121, 21);
+            this.cboCriterioAvanzado.TabIndex = 26;
+            this.cboCriterioAvanzado.Visible = false;
+            // 
+            // cmbCriterioCategoria
+            // 
+            this.cmbCriterioCategoria.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCriterioCategoria.FormattingEnabled = true;
+            this.cmbCriterioCategoria.Location = new System.Drawing.Point(536, 78);
+            this.cmbCriterioCategoria.Name = "cmbCriterioCategoria";
+            this.cmbCriterioCategoria.Size = new System.Drawing.Size(121, 21);
+            this.cmbCriterioCategoria.TabIndex = 27;
+            this.cmbCriterioCategoria.Visible = false;
+            // 
+            // btnLimpiarFiltros
+            // 
+            this.btnLimpiarFiltros.Location = new System.Drawing.Point(836, 491);
+            this.btnLimpiarFiltros.Name = "btnLimpiarFiltros";
+            this.btnLimpiarFiltros.Size = new System.Drawing.Size(123, 23);
+            this.btnLimpiarFiltros.TabIndex = 28;
+            this.btnLimpiarFiltros.Text = "Limpiar Filtros";
+            this.btnLimpiarFiltros.UseVisualStyleBackColor = true;
+            this.btnLimpiarFiltros.Click += new System.EventHandler(this.btnLimpiarFiltros_Click);
             // 
             // frmArticulos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1337, 543);
+            this.ClientSize = new System.Drawing.Size(1320, 659);
+            this.Controls.Add(this.btnLimpiarFiltros);
+            this.Controls.Add(this.cmbCriterioCategoria);
+            this.Controls.Add(this.cboCriterioAvanzado);
             this.Controls.Add(this.txtFiltroAvanzado);
             this.Controls.Add(this.lblFiltroAvanzado);
             this.Controls.Add(this.cboCriterio);
@@ -226,7 +263,6 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.dataGridView);
             this.Name = "frmArticulos";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.frmArticulos_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
@@ -255,6 +291,9 @@
         private System.Windows.Forms.Button btnEliminarFisico;
         private System.Windows.Forms.Button btnModificar;
         private System.Windows.Forms.Button btnAgregar;
+        private System.Windows.Forms.ComboBox cboCriterioAvanzado;
+        private System.Windows.Forms.ComboBox cmbCriterioCategoria;
+        private System.Windows.Forms.Button btnLimpiarFiltros;
     }
 }
 
