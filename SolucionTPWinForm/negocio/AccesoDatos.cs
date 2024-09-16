@@ -49,16 +49,19 @@ namespace negocio
         public object ejecutarAccion()
         {
             comando.Connection = conexion;
+
             try
             {
                 conexion.Open();
- 
-
-                return comando.ExecuteScalar();
+                return comando.ExecuteScalar(); // Devuelve el valor de SCOPE_IDENTITY()
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+            finally
+            {
+                conexion.Close(); // Asegurarse de cerrar la conexión
             }
         }
 

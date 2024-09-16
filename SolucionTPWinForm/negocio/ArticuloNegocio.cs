@@ -20,7 +20,7 @@ namespace negocio
             try
             {
 
-                datos.setearConsulta("Select A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, A.IdCategoria,Precio,C.Id as IdC, C.Descripcion as DescripcionC, M.Id as IdM, M.Descripcion as DescripcionM,I.Id as IdIm, I.IdArticulo, I.ImagenUrl From ARTICULOS A, CATEGORIAS C, MARCAS M, IMAGENES I Where C.Id = A.IdCategoria And M.Id = A.IdMarca ");
+                datos.setearConsulta("Select A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, A.IdCategoria,Precio,C.Id as IdC, C.Descripcion as DescripcionC, M.Id as IdM, M.Descripcion as DescripcionM,I.Id as IdIm, I.IdArticulo, I.ImagenUrl From ARTICULOS A, CATEGORIAS C, MARCAS M, IMAGENES I Where C.Id = A.IdCategoria And M.Id = A.IdMarca And I.IdArticulo = A.Id");
                 //datos.setearConsulta("select * from ARTICULOS");
 
                 datos.ejecutarLectura();
@@ -230,7 +230,7 @@ namespace negocio
             try
             {
                 datos.setearConsulta("INSERT INTO ARTICULOS (Codigo, Nombre, Descripcion, Precio, IdMarca, IdCategoria) " +
-                             "VALUES (@Codigo, @Nombre, @Descripcion, @Precio, @IdMarca, @IdCategoria  )");
+                             "VALUES (@Codigo, @Nombre, @Descripcion, @Precio, @IdMarca, @IdCategoria); " + "SELECT SCOPE_IDENTITY();");
 
                 // Establecimiento de parámetros
                 datos.setearParametro("@Codigo", nuevo.Codigo);
@@ -242,6 +242,8 @@ namespace negocio
 
 
                 idGenerado = Convert.ToInt32(datos.ejecutarAccion());
+
+                
 
                 //datos.setearParametro("@ImagenUrl", nuevo.Imagenes.Count > 0 ? nuevo.Imagenes[0].ImagenUrl : (object)DBNull.Value);
                 return idGenerado;
@@ -308,7 +310,6 @@ namespace negocio
                 datos.setearConsulta("update ARTICULOS set Activo = 0 Where id = @id");
                 datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
-
             }
             catch (Exception ex)
             {

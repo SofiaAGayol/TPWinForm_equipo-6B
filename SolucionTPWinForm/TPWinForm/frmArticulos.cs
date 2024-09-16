@@ -223,14 +223,12 @@ namespace TPWinForm
         private void btnAgregar_Click(object sender, EventArgs e)
         {
 
-            foreach (var item in Application.OpenForms)
-            {
-                if (item.GetType() == typeof(frmAgregarArticulo))
-                    return;
-            }
+
 
             frmAgregarArticulo Ventana = new frmAgregarArticulo();
-            Ventana.Show();
+            Ventana.ShowDialog();
+
+            cargar();
         }
 
         private void btnModificar_Click(object sender, EventArgs e)

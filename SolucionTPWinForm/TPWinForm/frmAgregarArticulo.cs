@@ -70,9 +70,11 @@ namespace TPWinForm
                 else
                 {
                     idNuevo = negocio.agregar(articulo);
+
                     MessageBox.Show("Agregado exitosamente");
                 }
 
+                img.IdArticulo = idNuevo;
                 
                 imagenNegocio.agregar(img);
 
