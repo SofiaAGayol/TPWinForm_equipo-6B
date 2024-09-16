@@ -212,66 +212,96 @@ namespace TPWinForm
 
         private void cboCampo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string opcion = cboCampo.SelectedItem.ToString();
-
-            if (opcion == "Id" || opcion == "Precio")
+            if (cboCampo != null && cboCampo.SelectedItem != null)
             {
-                cboCriterio.Visible = true;
-                cboCriterioAvanzado.Visible = false;
-                cmbCriterioCategoria.Visible = false;
+                string opcion = cboCampo.SelectedItem.ToString();
 
-                cboCriterio.Items.Clear();
 
-                txtFiltroAvanzado.Enabled = true;
+
+                if (opcion == "Id" || opcion == "Precio")
+                {
+                    cboCriterio.Visible = true;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = false;
+
+                    cboCriterio.Items.Clear();
+
+                    txtFiltroAvanzado.Enabled = true;
+
+                    cboCriterio.Items.Add("Mayor a");
+                    cboCriterio.Items.Add("Menor a");
+                    cboCriterio.Items.Add("Igual a");
+                }
+                else if (opcion == "Marca")
+                {
+                    cboCriterio.Visible = false;
+                    cboCriterioAvanzado.Visible = true;
+                    cmbCriterioCategoria.Visible = false;
+
+                    MarcaNegocio marcaNegocio = new MarcaNegocio();
+                    cboCriterioAvanzado.Items.Clear();
+                    cboCriterioAvanzado.DataSource = marcaNegocio.listar();
+                    cboCriterioAvanzado.ValueMember = "Id";
+                    cboCriterioAvanzado.DisplayMember = "Descripcion";
+
+                    txtFiltroAvanzado.Enabled = false;
+
+                }
+                else if (opcion == "Categoria")
+                {
+                    cboCriterio.Visible = false;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = true;
+
+                    CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+                    cmbCriterioCategoria.Items.Clear();
+                    cmbCriterioCategoria.DataSource = categoriaNegocio.listar();
+                    cmbCriterioCategoria.ValueMember = "Id";
+                    cmbCriterioCategoria.DisplayMember = "Descripcion";
+
+                    txtFiltroAvanzado.Enabled = false;
+
+                }
+                else
+                {
+
+                    cboCriterio.Visible = true;
+                    cboCriterioAvanzado.Visible = false;
+                    cmbCriterioCategoria.Visible = false;
+
+                    cboCriterio.Items.Clear();
+
+                    txtFiltroAvanzado.Enabled = true;
+                    cboCriterio.Items.Add("Comienza con");
+                    cboCriterio.Items.Add("Termina con");
+                    cboCriterio.Items.Add("Contiene");
+                }
+            }
+
+        }
+
+        private void btnLimpiarFiltros_Click(object sender, EventArgs e)
+        {
                 
-                cboCriterio.Items.Add("Mayor a");
-                cboCriterio.Items.Add("Menor a");
-                cboCriterio.Items.Add("Igual a");
-            }
-            else if (opcion == "Marca")
-            {
-                cboCriterio.Visible = false;
-                cboCriterioAvanzado.Visible = true;
-                cmbCriterioCategoria.Visible = false;
+                cboCampo.SelectedIndex = -1;
 
-                MarcaNegocio marcaNegocio = new MarcaNegocio();
-                cboCriterioAvanzado.Items.Clear();
-                cboCriterioAvanzado.DataSource = marcaNegocio.listar();
-                cboCriterioAvanzado.ValueMember = "Id";
-                cboCriterioAvanzado.DisplayMember = "Descripcion";
-
-                txtFiltroAvanzado.Enabled = false;
-               
-            }
-            else if (opcion == "Categoria")
-            {
-                cboCriterio.Visible = false;
-                cboCriterioAvanzado.Visible = false;
-                cmbCriterioCategoria.Visible = true;
-
-                CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
-                cmbCriterioCategoria.Items.Clear();
-                cmbCriterioCategoria.DataSource = categoriaNegocio.listar();
-                cmbCriterioCategoria.ValueMember = "Id";
-                cmbCriterioCategoria.DisplayMember = "Descripcion";
-
-                txtFiltroAvanzado.Enabled = false;
-
-            }
-            else
-            {
-
-                cboCriterio.Visible = true;
-                cboCriterioAvanzado.Visible = false;
-                cmbCriterioCategoria.Visible = false;
-
+                
+                cboCriterio.DataSource = null;
                 cboCriterio.Items.Clear();
+                cboCriterio.Visible = true;
 
-                txtFiltroAvanzado.Enabled = true;
-                cboCriterio.Items.Add("Comienza con");
-                cboCriterio.Items.Add("Termina con");
-                cboCriterio.Items.Add("Contiene");
-            }
+                cmbCriterioCategoria.DataSource = null;
+                cmbCriterioCategoria.Items.Clear();
+                cboCriterioAvanzado.Visible = false;
+                
+                cmbCriterioCategoria.DataSource = null;
+                cmbCriterioCategoria.Items.Clear();
+                cmbCriterioCategoria.Visible = false; 
+
+                txtFiltroAvanzado.Text = string.Empty;
+                txtFiltroAvanzado.Enabled = false;
+            
+                cargar();
 
         }
 

@@ -47,6 +47,7 @@
             this.btnAgregar = new System.Windows.Forms.Button();
             this.cboCriterioAvanzado = new System.Windows.Forms.ComboBox();
             this.cmbCriterioCategoria = new System.Windows.Forms.ComboBox();
+            this.btnLimpiarFiltros = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -226,11 +227,22 @@
             this.cmbCriterioCategoria.TabIndex = 27;
             this.cmbCriterioCategoria.Visible = false;
             // 
+            // btnLimpiarFiltros
+            // 
+            this.btnLimpiarFiltros.Location = new System.Drawing.Point(836, 491);
+            this.btnLimpiarFiltros.Name = "btnLimpiarFiltros";
+            this.btnLimpiarFiltros.Size = new System.Drawing.Size(123, 23);
+            this.btnLimpiarFiltros.TabIndex = 28;
+            this.btnLimpiarFiltros.Text = "Limpiar Filtros";
+            this.btnLimpiarFiltros.UseVisualStyleBackColor = true;
+            this.btnLimpiarFiltros.Click += new System.EventHandler(this.btnLimpiarFiltros_Click);
+            // 
             // frmArticulos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1320, 659);
+            this.Controls.Add(this.btnLimpiarFiltros);
             this.Controls.Add(this.cmbCriterioCategoria);
             this.Controls.Add(this.cboCriterioAvanzado);
             this.Controls.Add(this.txtFiltroAvanzado);
@@ -281,6 +293,7 @@
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.ComboBox cboCriterioAvanzado;
         private System.Windows.Forms.ComboBox cmbCriterioCategoria;
+        private System.Windows.Forms.Button btnLimpiarFiltros;
     }
 }
 
