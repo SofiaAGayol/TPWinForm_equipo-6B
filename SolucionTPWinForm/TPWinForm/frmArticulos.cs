@@ -64,11 +64,18 @@ namespace TPWinForm
         {
             try
             {
-                pictureBox1.Load(imagen);
+                if (Uri.IsWellFormedUriString(imagen, UriKind.Absolute))
+                {
+                    pictureBox1.Load(imagen);
+                }
+                else
+                {
+                    pictureBox1.Load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWN8hLKJungcUipWLReON9fse4yZcyB0rzNw&s");
+                }
             }
             catch (Exception)
             {
-                pictureBox1.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
+                pictureBox1.Load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWN8hLKJungcUipWLReON9fse4yZcyB0rzNw&s");
             }
         }
 
