@@ -31,12 +31,13 @@ namespace TPWinForm
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
             ImagenNegocio imagenNegocio = new ImagenNegocio();
-
+            int idNuevo = 0;
             try
             {
                 if (articulo == null)
                     articulo = new Articulo();
 
+                
                 articulo.Codigo = txtCodigo.Text;
                 articulo.Nombre = txtNombre.Text;
                 articulo.Descripcion = txtDescripcion.Text;
@@ -59,13 +60,19 @@ namespace TPWinForm
                     img.ImagenUrl = "https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png";
                 }
 
-         
-                
-                int id = negocio.agregar(articulo);
 
-                MessageBox.Show(id.ToString());
 
-                img.IdArticulo = id;
+                if (articulo.Id != 0)
+                {
+                    negocio.modificar(articulo);
+                    MessageBox.Show("Modificado exitosamente");
+                }
+                else
+                {
+                    idNuevo = negocio.agregar(articulo);
+                    MessageBox.Show("Agregado exitosamente");
+                }
+
                 
                 imagenNegocio.agregar(img);
 

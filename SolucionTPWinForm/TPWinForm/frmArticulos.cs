@@ -233,6 +233,20 @@ namespace TPWinForm
             Ventana.Show();
         }
 
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+
+            foreach (var item in Application.OpenForms)
+            {
+                if (item.GetType() == typeof(frmModificarArticulo))
+                    return;
+            }
+
+            frmModificarArticulo Ventana = new frmModificarArticulo() { articulo = seleccionado };
+            Ventana.Show();
+        }
+
         //FIN FILTRO
     }
 
