@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using dominio;
+﻿using dominio;
 using negocio;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace TPWinForm
 {
@@ -19,7 +13,7 @@ namespace TPWinForm
         {
             InitializeComponent();
         }
-        
+
         private void frmArticulos_Load(object sender, EventArgs e)
         {
             cargar();
@@ -41,7 +35,7 @@ namespace TPWinForm
             {
                 Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
                 cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
-                
+
             }
         }
 
@@ -84,7 +78,7 @@ namespace TPWinForm
             Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
             if (seleccionado != null && seleccionado.Imagenes.Count > 0)
             {
-                indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count; 
+                indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count;
                 cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
             }
         }
@@ -160,10 +154,10 @@ namespace TPWinForm
 
 
                 string opcion = cboCampo.SelectedItem.ToString();
-                
+
                 string campo = cboCampo.SelectedItem.ToString();
                 string criterio;
-                string filtro; 
+                string filtro;
                 if (opcion == "Marca")
                 {
                     criterio = cboCriterioAvanzado.SelectedItem.ToString();
@@ -176,14 +170,14 @@ namespace TPWinForm
                     filtro = criterio;
                     dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
                 }
-                
+
                 else
                 {
                     criterio = cboCriterio.SelectedItem.ToString();
                     filtro = txtFiltroAvanzado.Text;
                     dataGridView.DataSource = negocio.filtrar(campo, criterio, filtro);
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -289,30 +283,42 @@ namespace TPWinForm
 
         private void btnLimpiarFiltros_Click(object sender, EventArgs e)
         {
-                
-                cboCampo.SelectedIndex = -1;
 
-                
-                cboCriterio.DataSource = null;
-                cboCriterio.Items.Clear();
-                cboCriterio.Visible = true;
+            cboCampo.SelectedIndex = -1;
 
-                cmbCriterioCategoria.DataSource = null;
-                cmbCriterioCategoria.Items.Clear();
-                cboCriterioAvanzado.Visible = false;
-                
-                cmbCriterioCategoria.DataSource = null;
-                cmbCriterioCategoria.Items.Clear();
-                cmbCriterioCategoria.Visible = false; 
 
-                txtFiltroAvanzado.Text = string.Empty;
-                txtFiltroAvanzado.Enabled = false;
-            
-                cargar();
+            cboCriterio.DataSource = null;
+            cboCriterio.Items.Clear();
+            cboCriterio.Visible = true;
+
+            cmbCriterioCategoria.DataSource = null;
+            cmbCriterioCategoria.Items.Clear();
+            cboCriterioAvanzado.Visible = false;
+
+            cmbCriterioCategoria.DataSource = null;
+            cmbCriterioCategoria.Items.Clear();
+            cmbCriterioCategoria.Visible = false;
+
+            txtFiltroAvanzado.Text = string.Empty;
+            txtFiltroAvanzado.Enabled = false;
+
+            cargar();
 
         }
 
         //FIN FILTRO
+
+
+        //AGREGAR ARTICULO
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+        {
+            frmAgregarArticulo alta = new frmAgregarArticulo();
+            alta.ShowDialog();
+            cargar();
+        }
+
+        //FIN AGREGAR ARTICULO
     }
 
 }
