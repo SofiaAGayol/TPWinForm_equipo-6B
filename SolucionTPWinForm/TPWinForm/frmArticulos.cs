@@ -2,16 +2,23 @@
 using negocio;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace TPWinForm
 {
     public partial class frmArticulos : Form
     {
-        private List<Articulo> listaArticulo;
+        List<Articulo> listaArticulo;
+        string rutaImagen = "https://t3.ftcdn.net/jpg/02/48/42/64/240_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg";
+        private int indiceImagenActual;
+        private int imagenActual = 0;
+
         public frmArticulos()
         {
             InitializeComponent();
+            this.Text = string.Empty;
         }
 
         private void frmArticulos_Load(object sender, EventArgs e)
@@ -25,33 +32,57 @@ namespace TPWinForm
             cboCampo.Items.Add("Categoria");
         }
 
-        //IMAGENES
-
-        private int indiceImagenActual = 0;
-
         private void dataGridView_SelectionChanged(object sender, EventArgs e)
         {
             if (dataGridView.CurrentRow != null)
             {
                 Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-                cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
-
+                if (seleccionado.Imagenes != null && seleccionado.Imagenes.Count > 0)
+                {
+                    if (indiceImagenActual >= 0 && indiceImagenActual < seleccionado.Imagenes.Count)
+                    {
+                        cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
+                    }
+                    else
+                    {
+                        cargarImagen(seleccionado.Imagenes[0].ImagenUrl);
+                        indiceImagenActual = 0; 
+                    }
+                }
+                else
+                {
+                    cargarImagen("https://path/to/default-image.jpg");
+                }
             }
         }
 
         private void cargar()
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
-            try
+            listaArticulo = negocio.listar();
+
+
+            if (listaArticulo.Count > 0 && listaArticulo[0].Imagenes.Count > 0)
             {
-                listaArticulo = negocio.listar();
-                dataGridView.DataSource = listaArticulo;
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                string url = listaArticulo[0].Imagenes[0].ImagenUrl;
+                string urlEscapada = Uri.EscapeUriString(url);
+                using (var webClient = new System.Net.WebClient())
+                {
+                    var imagenDescargada = webClient.DownloadData(urlEscapada);
+                    using (var stream = new MemoryStream(imagenDescargada))
+                    {
+                        pictureBox1.Image = Image.FromStream(stream);
+                    }
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show("No hay artículos o imágenes disponibles para mostrar.");
             }
+            dataGridView.DataSource = listaArticulo;
+            dataGridView.Columns["Id"].Visible = false;
+
+         
         }
 
         private void cargarImagen(string imagen)
@@ -314,8 +345,9 @@ namespace TPWinForm
         private void btnAgregar_Click(object sender, EventArgs e)
         {
             frmAgregarArticulo alta = new frmAgregarArticulo();
+            alta.FormClosed += (s, args) => cargar();
             alta.ShowDialog();
-            cargar();
+            //cargar();
         }
 
         //FIN AGREGAR ARTICULO

@@ -57,6 +57,7 @@
             this.btnAgregarImagen.TabIndex = 31;
             this.btnAgregarImagen.Text = "+";
             this.btnAgregarImagen.UseVisualStyleBackColor = true;
+            this.btnAgregarImagen.Click += new System.EventHandler(this.btnAgregarImagen_Click);
             // 
             // pbxArticulo
             // 
@@ -73,6 +74,7 @@
             this.txtUrlImagen.Name = "txtUrlImagen";
             this.txtUrlImagen.Size = new System.Drawing.Size(121, 20);
             this.txtUrlImagen.TabIndex = 22;
+            this.txtUrlImagen.TextChanged += new System.EventHandler(this.txtUrlImagen_TextChanged);
             // 
             // lblUrlImagen
             // 
@@ -127,6 +129,7 @@
             this.btnCancelar.TabIndex = 26;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = true;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
             // btnAceptar
             // 
@@ -136,6 +139,7 @@
             this.btnAceptar.TabIndex = 25;
             this.btnAceptar.Text = "Aceptar";
             this.btnAceptar.UseVisualStyleBackColor = true;
+            this.btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
             // 
             // txtDescripcion
             // 
@@ -226,6 +230,7 @@
             this.Controls.Add(this.lblCodigo);
             this.Name = "frmAgregarArticulo";
             this.Text = "AgregarArticulo";
+            this.Load += new System.EventHandler(this.frmAgregarArticulo_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbxArticulo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
