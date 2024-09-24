@@ -32,59 +32,42 @@ namespace TPWinForm
             cboCampo.Items.Add("Categoria");
         }
 
-        private void dataGridView_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dataGridView.CurrentRow != null)
-            {
-                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
-                if (seleccionado.Imagenes != null && seleccionado.Imagenes.Count > 0)
-                {
-                    if (indiceImagenActual >= 0 && indiceImagenActual < seleccionado.Imagenes.Count)
-                    {
-                        cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
-                    }
-                    else
-                    {
-                        cargarImagen(seleccionado.Imagenes[0].ImagenUrl);
-                        indiceImagenActual = 0; 
-                    }
-                }
-                else
-                {
-                    cargarImagen("https://path/to/default-image.jpg");
-                }
-            }
-        }
-
+        //LISTAR ARTIUCLOS
         private void cargar()
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
             listaArticulo = negocio.listar();
 
-
-            if (listaArticulo.Count > 0 && listaArticulo[0].Imagenes.Count > 0)
+            try
             {
-                string url = listaArticulo[0].Imagenes[0].ImagenUrl;
-                string urlEscapada = Uri.EscapeUriString(url);
-                using (var webClient = new System.Net.WebClient())
+                if (listaArticulo.Count > 0 && listaArticulo[0].Imagenes.Count > 0)
                 {
-                    var imagenDescargada = webClient.DownloadData(urlEscapada);
-                    using (var stream = new MemoryStream(imagenDescargada))
+                    string url = listaArticulo[0].Imagenes[0].ImagenUrl;
+                    string urlEscapada = Uri.EscapeUriString(url);
+                    using (var webClient = new System.Net.WebClient())
                     {
-                        pictureBox1.Image = Image.FromStream(stream);
+                        var imagenDescargada = webClient.DownloadData(urlEscapada);
+                        using (var stream = new MemoryStream(imagenDescargada))
+                        {
+                            pictureBox1.Image = Image.FromStream(stream);
+                        }
                     }
+                    dataGridView.DataSource = listaArticulo;
                 }
+                else
+                {
+                    MessageBox.Show("No hay artículos o imágenes disponibles para mostrar.");
+                }
+                
+                //dataGridView.Columns["Id"].Visible = false;
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("No hay artículos o imágenes disponibles para mostrar.");
+                MessageBox.Show(ex.ToString());
             }
-            dataGridView.DataSource = listaArticulo;
-            dataGridView.Columns["Id"].Visible = false;
-
-         
         }
 
+        //CARGAR LISTA DE IMAGENES
         private void cargarImagen(string imagen)
         {
             try
@@ -104,23 +87,43 @@ namespace TPWinForm
             }
         }
 
+        //IMAGENES AL CAMBIAR DE ARTICULO
+        private void dataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView.CurrentRow != null)
+            {
+                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+                if (seleccionado.Imagenes != null && seleccionado.Imagenes.Count > 0)
+                {
+                    indiceImagenActual = 0;
+                    cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
+                }
+                else
+                {
+                    cargarImagen("https://path/to/default-image.jpg");
+                }
+            }
+        }
+
+        //SIGUIENTE IMAGEN
         private void btnSiguienteImagen_Click(object sender, EventArgs e)
         {
             Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
             if (seleccionado != null && seleccionado.Imagenes.Count > 0)
             {
                 indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count;
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
             }
         }
 
+        //IMAGEN ANTERIOR
         private void btnImagenAnterior_Click(object sender, EventArgs e)
         {
             Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
             if (seleccionado != null && seleccionado.Imagenes.Count > 0)
             {
                 indiceImagenActual = (indiceImagenActual - 1 + seleccionado.Imagenes.Count) % seleccionado.Imagenes.Count;
-                cargarImagen(listaArticulo[0].Imagenes[0].ImagenUrl);
+                cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
             }
         }
 

@@ -20,14 +20,19 @@ namespace negocio
             try
             {
 
-                datos.setearConsulta("SELECT a.Id, Codigo, Nombre, a.Descripcion, Precio, " +
+                datos.setearConsulta("SELECT a.Id, Codigo, Nombre, a.Descripcion, Precio, a.IdMarca, a.IdCategoria, " +
                                      "m.Id as IdMarca, m.Descripcion as DescripcionM, " +
                                      "c.Id as IdCategoria, c.Descripcion as DescripcionC, " +
                                      "i.Id as IdIm, i.IdArticulo, i.ImagenUrl as Imagen " +
-                                     "FROM ARTICULOS a " +
-                                     "INNER JOIN MARCAS m ON a.IdMarca = m.Id " +
-                                     "LEFT JOIN CATEGORIAS c ON a.IdCategoria = c.Id " +
-                                     "LEFT JOIN IMAGENES i ON a.Id = i.IdArticulo;"); datos.ejecutarLectura();
+                                     "FROM ARTICULOS a, CATEGORIAS c, MARCAS m, IMAGENES i " +
+                                     "Where C.Id = A.IdCategoria And M.Id = A.IdMarca And I.IdArticulo = A.Id"
+
+                                     //"FROM ARTICULOS a"+
+                                     //"INNER JOIN MARCAS m ON a.IdMarca = m.Id " +
+                                     //"LEFT JOIN CATEGORIAS c ON a.IdCategoria = c.Id " +
+                                     //"LEFT JOIN IMAGENES i ON a.Id = i.IdArticulo;"
+                                     );
+                datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
@@ -55,20 +60,34 @@ namespace negocio
                         articulo.Categoria.Descripcion = (string)datos.Lector["DescripcionC"];
 
                         //Imagenes
-                        if (!(datos.Lector["IdIm"] is DBNull))
-                        {
-                            articulo.Imagenes = new List<Imagen>();
-                            Imagen imagen = new Imagen();
+                        //if (!(datos.Lector["IdIm"] is DBNull))
+                        //{
+                        //    articulo.Imagenes = new List<Imagen>();
+                        //    Imagen imagen = new Imagen();
 
-                            imagen.Id = (int)datos.Lector["IdIm"];
-                            imagen.IdArticulo = (int)datos.Lector["IdArticulo"];
-                            imagen.ImagenUrl = (string)datos.Lector["Imagen"];
+                        //    imagen.Id = (int)datos.Lector["IdIm"];
+                        //    imagen.IdArticulo = (int)datos.Lector["IdArticulo"];
+                        //    imagen.ImagenUrl = (string)datos.Lector["Imagen"];
 
-                            articulo.Imagenes.Add(imagen);
-                        }
+                        //    articulo.Imagenes.Add(imagen);
+                        //}
 
+                        // Inicializamos la lista de imágenes del artículo
+                        articulo.Imagenes = new List<Imagen>();
 
+                        // Añadimos el artículo a la lista
                         lista.Add(articulo);
+                    }
+
+                    if (!(datos.Lector["IdIm"] is DBNull))
+                    {
+                        Imagen imagen = new Imagen();
+                        imagen.Id = (int)datos.Lector["IdIm"];
+                        imagen.IdArticulo = (int)datos.Lector["IdArticulo"];
+                        imagen.ImagenUrl = (string)datos.Lector["Imagen"];
+
+                        // Añadir la imagen a la lista del artículo
+                        articulo.Imagenes.Add(imagen);
                     }
                 }
 
