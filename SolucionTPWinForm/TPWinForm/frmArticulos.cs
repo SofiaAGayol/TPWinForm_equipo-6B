@@ -40,7 +40,7 @@ namespace TPWinForm
 
             try
             {
-                if (listaArticulo.Count > 0 && listaArticulo[0].Imagenes.Count > 0)
+                if (listaArticulo.Count > 0 )
                 {
                     string url = listaArticulo[0].Imagenes[0].ImagenUrl;
                     string urlEscapada = Uri.EscapeUriString(url);
@@ -53,6 +53,7 @@ namespace TPWinForm
                         }
                     }
                     dataGridView.DataSource = listaArticulo;
+                    dataGridView.Refresh();
                 }
                 else
                 {
@@ -113,6 +114,7 @@ namespace TPWinForm
             {
                 indiceImagenActual = (indiceImagenActual + 1) % seleccionado.Imagenes.Count;
                 cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
+                lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + seleccionado.Imagenes.Count;
             }
         }
 
@@ -124,6 +126,7 @@ namespace TPWinForm
             {
                 indiceImagenActual = (indiceImagenActual - 1 + seleccionado.Imagenes.Count) % seleccionado.Imagenes.Count;
                 cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
+                lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + seleccionado.Imagenes.Count;
             }
         }
 
@@ -349,8 +352,10 @@ namespace TPWinForm
         {
             frmAgregarArticulo alta = new frmAgregarArticulo();
             alta.FormClosed += (s, args) => cargar();
-            alta.ShowDialog();
-            //cargar();
+            if (alta.ShowDialog() == DialogResult.OK) // Espera que el usuario confirme la acción
+            {
+                cargar(); // Recarga la lista de artículos solo si se añadió uno nuevo
+            }
         }
 
         //FIN AGREGAR ARTICULO

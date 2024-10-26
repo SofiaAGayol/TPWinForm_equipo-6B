@@ -20,25 +20,23 @@ namespace negocio
             try
             {
 
-                datos.setearConsulta("SELECT a.Id, Codigo, Nombre, a.Descripcion, Precio, a.IdMarca, a.IdCategoria, " +
-                                     "m.Id as IdMarca, m.Descripcion as DescripcionM, " +
-                                     "c.Id as IdCategoria, c.Descripcion as DescripcionC, " +
-                                     "i.Id as IdIm, i.IdArticulo, i.ImagenUrl as Imagen " +
-                                     "FROM ARTICULOS a, CATEGORIAS c, MARCAS m, IMAGENES i " +
-                                     "Where C.Id = A.IdCategoria And M.Id = A.IdMarca And I.IdArticulo = A.Id"
+                datos.setearConsulta("SELECT a.Id, a.Codigo, a.Nombre, a.Descripcion, a.Precio, " +
+                             "m.Descripcion as Marca, " +
+                             "c.Descripcion as Categoria, " +
+                             "i.Id as IdIm, i.IdArticulo,i.ImagenUrl as Imagen " +
+                             "FROM ARTICULOS a " +
+                             "LEFT JOIN CATEGORIAS c ON c.Id = a.IdCategoria " +
+                             "LEFT JOIN MARCAS m ON m.Id = a.IdMarca " +
+                             "LEFT JOIN IMAGENES i ON i.IdArticulo = a.Id " +
+                             "ORDER BY a.Id ASC; ");
 
-                                     //"FROM ARTICULOS a"+
-                                     //"INNER JOIN MARCAS m ON a.IdMarca = m.Id " +
-                                     //"LEFT JOIN CATEGORIAS c ON a.IdCategoria = c.Id " +
-                                     //"LEFT JOIN IMAGENES i ON a.Id = i.IdArticulo;"
-                                     );
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
-                    int idArticulo = (int)datos.Lector["Id"];
-               
-                    Articulo articulo = lista.FirstOrDefault(a => a.Id == idArticulo);
+                    string codigoArticulo = (string)datos.Lector["Codigo"];
+
+                    Articulo articulo = lista.FirstOrDefault(a => a.Codigo == codigoArticulo);
 
                     if (articulo == null)
                     {
@@ -51,26 +49,24 @@ namespace negocio
 
                         //Marca
                         articulo.Marca = new Marca();
-                        articulo.Marca.Id = (int)datos.Lector["IdMarca"];
-                        articulo.Marca.Descripcion = (string)datos.Lector["DescripcionM"];
+                        articulo.Marca.Descripcion = (string)datos.Lector["Marca"];
 
                         //Categoria
                         articulo.Categoria = new Categoria();
-                        articulo.Categoria.Id = (int)datos.Lector["IdCategoria"];
-                        articulo.Categoria.Descripcion = (string)datos.Lector["DescripcionC"];
+                        articulo.Categoria.Descripcion = (string)datos.Lector["Categoria"];
 
                         //Imagenes
-                        //if (!(datos.Lector["IdIm"] is DBNull))
-                        //{
-                        //    articulo.Imagenes = new List<Imagen>();
-                        //    Imagen imagen = new Imagen();
+                        if (!(datos.Lector["Imagen"] is DBNull))
+                        {
+                            articulo.Imagenes = new List<Imagen>();
+                            Imagen imagen = new Imagen();
 
-                        //    imagen.Id = (int)datos.Lector["IdIm"];
-                        //    imagen.IdArticulo = (int)datos.Lector["IdArticulo"];
-                        //    imagen.ImagenUrl = (string)datos.Lector["Imagen"];
+                            imagen.Id = (int)datos.Lector["IdIm"];
+                            imagen.IdArticulo = (int)datos.Lector["IdArticulo"];
+                            imagen.ImagenUrl = (string)datos.Lector["Imagen"];
 
-                        //    articulo.Imagenes.Add(imagen);
-                        //}
+                            articulo.Imagenes.Add(imagen);
+                        }
 
                         // Inicializamos la lista de imágenes del artículo
                         articulo.Imagenes = new List<Imagen>();
@@ -93,7 +89,7 @@ namespace negocio
 
                 datos.cerrarConexion();
                 return lista;
-       
+
             }
             catch (Exception ex)
             {
@@ -102,25 +98,102 @@ namespace negocio
 
         }
 
+        public List<Articulo> listarConSP()
+        {
+            List<Articulo> lista = new List<Articulo>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+
+                //datos.setearConsulta("SELECT a.Id, a.Codigo, a.Nombre, a.Descripcion, a.Precio, m.Id as IdMarca, m.Descripcion as DescripcionM, c.Id as IdCategoria, c.Descripcion as DescripcionC, i.Id as IdImagen, i.ImagenUrl as Imagen FROM ARTICULOS a LEFT JOIN CATEGORIAS c ON c.Id = a.IdCategoria LEFT JOIN MARCAS m ON m.Id = a.IdMarca LEFT JOIN IMAGENES i ON i.IdArticulo = a.Id ");
+                //datos.ejecutarLectura();
+
+                datos.setearProcedimiento("storedListar");
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    int idArticulo = (int)datos.Lector["Id"];
+                    string codigoArticulo = (string)datos.Lector["Codigo"];
+
+                    Articulo articulo = lista.FirstOrDefault(a => a.Codigo == codigoArticulo);
+
+                    if (articulo == null)
+                    {
+                        articulo = new Articulo();
+                        articulo.Id = (int)datos.Lector["Id"];
+                        articulo.Codigo = (string)datos.Lector["Codigo"];
+                        articulo.Nombre = (string)datos.Lector["Nombre"];
+                        articulo.Descripcion = (string)datos.Lector["Descripcion"];
+                        articulo.Precio = (decimal)datos.Lector["Precio"];
+
+                        //Marca
+                        articulo.Marca = new Marca();
+                        articulo.Marca.Id = (int)datos.Lector["IdMarca"];
+                        articulo.Marca.Descripcion = (string)datos.Lector["DescripcionM"];
+
+                        //Categoria
+                        articulo.Categoria = new Categoria();
+                        articulo.Categoria.Id = (int)datos.Lector["IdCategoria"];
+                        articulo.Categoria.Descripcion = (string)datos.Lector["DescripcionC"];
+
+                        // Inicializar la lista de imágenes
+                        articulo.Imagenes = new List<Imagen>();
+
+                        // Agregar artículo a la lista
+                        lista.Add(articulo);
+                    }
+
+                    if (!(datos.Lector["IdImagen"] is DBNull))
+                    {
+                        Imagen imagen = new Imagen();
+                        imagen.Id = (int)datos.Lector["IdImagen"];
+                        imagen.IdArticulo = (int)datos.Lector["Id"];
+                        imagen.ImagenUrl = (string)datos.Lector["Imagen"];
+
+                        articulo.Imagenes.Add(imagen);
+                    }
+                }
+
+                datos.cerrarConexion();
+                return lista;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<Articulo> filtrar(string campo, string criterio, string filtro)
         {
             List<Articulo> lista = new List<Articulo>();
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                string consulta = "Select A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, A.IdCategoria,Precio,C.Id as IdC, C.Descripcion as DescripcionC, M.Id as IdM, M.Descripcion as DescripcionM,I.Id as IdIm, I.IdArticulo, I.ImagenUrl From ARTICULOS A, CATEGORIAS C, MARCAS M, IMAGENES I Where C.Id = A.IdCategoria And M.Id = A.IdMarca And I.IdArticulo = A.Id And ";
+                string consulta = "SELECT a.Id, a.Codigo, a.Nombre, a.Descripcion, a.Precio, a.IdMarca, a.IdCategoria, " +
+                             "m.Id as IdMarca, m.Descripcion as DescripcionM, " +
+                             "c.Id as IdCategoria, c.Descripcion as DescripcionC, " +
+                             "i.Id as IdIm, i.IdArticulo, i.ImagenUrl as Imagen " +
+                             "FROM ARTICULOS a " +
+                             "LEFT JOIN CATEGORIAS c ON c.Id = a.IdCategoria " +
+                             "LEFT JOIN MARCAS m ON m.Id = a.IdMarca " +
+                             "LEFT JOIN IMAGENES i ON i.IdArticulo = a.Id " +
+                             "ORDER BY a.Id ASC;";
+
                 if (campo == "Id")
                 {
                     switch (criterio)
                     {
                         case "Mayor a":
-                            consulta += "A.Id > " + filtro;
+                            consulta += "a.Id > " + filtro;
                             break;
                         case "Menor a":
-                            consulta += "A.Id < " + filtro;
+                            consulta += "a.Id < " + filtro;
                             break;
                         default:
-                            consulta += "A.Id = " + filtro;
+                            consulta += "a.Id = " + filtro;
                             break;
                     }
                 }
@@ -129,13 +202,13 @@ namespace negocio
                     switch (criterio)
                     {
                         case "Comienza con":
-                            consulta += "Codigo like '" + filtro + "%' ";
+                            consulta += "a.Codigo like '" + filtro + "%' ";
                             break;
                         case "Termina con":
-                            consulta += "Codigo like '%" + filtro + "'";
+                            consulta += "a.Codigo like '%" + filtro + "'";
                             break;
                         default:
-                            consulta += "Codigo like '%" + filtro + "%'";
+                            consulta += "a.Codigo like '%" + filtro + "%'";
                             break;
                     }
                 }
@@ -144,36 +217,36 @@ namespace negocio
                     switch (criterio)
                     {
                         case "Comienza con":
-                            consulta += "Nombre like '" + filtro + "%' ";
+                            consulta += "a.Nombre like '" + filtro + "%' ";
                             break;
                         case "Termina con":
-                            consulta += "Nombre like '%" + filtro + "'";
+                            consulta += "a.Nombre like '%" + filtro + "'";
                             break;
                         default:
-                            consulta += "Nombre like '%" + filtro + "%'";
+                            consulta += "a.Nombre like '%" + filtro + "%'";
                             break;
                     }
                 }
                 else if (campo == "Marca")
                 {
-                    consulta += "M.Descripcion = '" + filtro + "'";
+                    consulta += "m.Descripcion = '" + filtro + "'";
                 }
                 else if (campo == "Categoria")
                 {
-                    consulta += "C.Descripcion = '" + filtro + "'";
+                    consulta += "c.Descripcion = '" + filtro + "'";
                 }
-                else if (campo == "Precio")
+                else if (campo == "a.Precio")
                 {
                     switch (criterio)
                     {
                         case "Mayor a":
-                            consulta += "Precio > " + filtro;
+                            consulta += "a.Precio > " + filtro;
                             break;
                         case "Menor a":
-                            consulta += "Precio < " + filtro;
+                            consulta += "a.Precio < " + filtro;
                             break;
                         default:
-                            consulta += "Precio = " + filtro;
+                            consulta += "a.Precio = " + filtro;
                             break;
                     }
                 }
@@ -182,13 +255,13 @@ namespace negocio
                     switch (criterio)
                     {
                         case "Comienza con":
-                            consulta += "A.Descripcion like '" + filtro + "%' ";
+                            consulta += "a.Descripcion like '" + filtro + "%' ";
                             break;
                         case "Termina con":
-                            consulta += "A.Descripcion like '%" + filtro + "'";
+                            consulta += "a.Descripcion like '%" + filtro + "'";
                             break;
                         default:
-                            consulta += "A.Descripcion like '%" + filtro + "%'";
+                            consulta += "a.Descripcion like '%" + filtro + "%'";
                             break;
                     }
                 }
@@ -289,35 +362,32 @@ namespace negocio
             return articulo;
         }
 
-        public void agregar(Articulo nuevo)
+        public void agregar(Articulo articulo)
         {
-            AccesoDatos datos = new AccesoDatos();
-           // int idGenerado = 0;
+            AccesoDatos accesoDatos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta("INSERT into Articulos(Codigo, Nombre, Descripcion, IdMarca, IdCategoria,Precio) values(@Codigo, @Nombre, @Descripcion,@IdMarca,@IdCategoria,@Precio)");
+                accesoDatos.setearConsulta("INSERT INTO Articulos (Codigo,Nombre,Descripcion,Idmarca,IdCategoria,Precio) VALUES ('" + articulo.Codigo + "','" + articulo.Nombre + "','" + articulo.Descripcion + "'," + articulo.Marca.Id + "," + articulo.Categoria.Id + "," + Math.Round(articulo.Precio, 2) + ") SELECT @@IDENTITY AS ID");
+                articulo.Id = accesoDatos.ejecutarAccion();
 
-                datos.setearParametro("@Codigo", nuevo.Codigo);
-                datos.setearParametro("@Nombre", nuevo.Nombre);
-                datos.setearParametro("@Descripcion", nuevo.Descripcion);
-                datos.setearParametro("@IdMarca", nuevo.Marca.Id);
-                datos.setearParametro("@IdCategoria", nuevo.Categoria.Id);
-                datos.setearParametro("@Precio", nuevo.Precio);
-
-                datos.ejecutarAccion();
+                ImagenNegocio imagenNegocio = new ImagenNegocio();
+                foreach (Imagen imagen in articulo.Imagenes)
+                {
+                    imagen.IdArticulo = articulo.Id;
+                    imagenNegocio.agregar(imagen);
+                }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+
+                throw;
             }
             finally
             {
-                datos.cerrarConexion();
+                accesoDatos.cerrarConexion();
             }
-
-
         }
 
         public void modificar(Articulo articulo)
@@ -350,5 +420,5 @@ namespace negocio
 
 
     }
-        
+
 }

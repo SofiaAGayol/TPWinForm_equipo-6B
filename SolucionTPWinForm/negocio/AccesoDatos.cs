@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using dominio;
 
 namespace negocio
 {
@@ -30,6 +31,30 @@ namespace negocio
             comando.CommandText = consulta;
         }
 
+        public void setearProcedimiento(string sp)
+        {
+            comando.CommandType = System.Data.CommandType.StoredProcedure;
+            comando.CommandText = sp;
+        }
+
+        public void ejecutarConsulta()
+        {
+            comando.Connection = conexion;
+
+            try
+            {
+                conexion.Open();
+                //EJECUTAR LECTURA
+                lector = comando.ExecuteReader();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
         public void ejecutarLectura()
         {
             comando.Connection = conexion;
@@ -46,13 +71,14 @@ namespace negocio
 
         }
 
-        public object ejecutarAccion()
+        public int ejecutarAccion()
         {
             comando.Connection = conexion;
             try
             {
                 conexion.Open();
-                return comando.ExecuteScalar();
+                int id = Convert.ToInt32(comando.ExecuteScalar());
+                return id;
             }
             catch (Exception ex)
             {
@@ -72,19 +98,7 @@ namespace negocio
             conexion.Close();
         }
 
-        //Devuelve el ID de Articulo
-        public object devolverIDArticulo()
-        {
-            object resultado;
-            using (SqlCommand comando = new SqlCommand("INSERT INTO ARTICULOS (Codigo, Nombre, Descripcion, Precio, IdMarca, IdCategoria) " +
-                             "VALUES (@Codigo, @Nombre, @Descripcion, @Precio, @IdMarca, @IdCategoria  )", conexion))
-            {
-                conexion.Open();
-                resultado = comando.ExecuteScalar();
-                conexion.Close();
-            }
+       
 
-            return resultado;
-        }
     }
 }
