@@ -406,6 +406,24 @@ namespace negocio
                 datos.setearParametro("@Id", articulo.Id);
 
                 datos.ejecutarAccion();
+
+                ImagenNegocio imagenNegocio = new ImagenNegocio();
+
+                List<Imagen> imagenesViejas = imagenNegocio.listar(articulo.Id);
+                foreach (Imagen imagenvieja in imagenesViejas)
+                {
+                    if (!articulo.Imagenes.Any(X => X.Id == imagenvieja.Id))
+                    {
+                        imagenNegocio.Eliminar(imagenvieja.Id);
+                    }
+                }
+
+                foreach (Imagen imagen in articulo.Imagenes)
+                {
+                    if (imagen.Id == 0)
+                        imagenNegocio.agregar(imagen);
+                }
+
             }
             catch (Exception ex)
             {
@@ -417,7 +435,32 @@ namespace negocio
             }
         }
 
+        public void Eliminar(Articulo articulo)
+        {
+            AccesoDatos accesoDatos = new AccesoDatos();
 
+            try
+            {
+                accesoDatos.setearConsulta("Delete Articulos where Id = " + articulo.Id + "");
+                accesoDatos.ejecutarAccion();
+
+                ImagenNegocio imagenNegocio = new ImagenNegocio();
+                foreach (Imagen imagen in articulo.Imagenes)
+                {
+                    imagenNegocio.Eliminar(imagen.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                accesoDatos.cerrarConexion();
+            }
+
+        }
 
     }
 

@@ -51,6 +51,7 @@
             this.lblImagen = new System.Windows.Forms.Label();
             this.btnSiguienteImagen = new System.Windows.Forms.Button();
             this.btnImagenAnterior = new System.Windows.Forms.Button();
+            this.btnEliminar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbxArticulo)).BeginInit();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -225,19 +226,20 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.DarkGray;
+            this.panel2.Controls.Add(this.btnEliminar);
             this.panel2.Controls.Add(this.btnSiguienteImagen);
             this.panel2.Controls.Add(this.btnImagenAnterior);
             this.panel2.Controls.Add(this.lblImagen);
             this.panel2.Controls.Add(this.pbxArticulo);
             this.panel2.Location = new System.Drawing.Point(364, 29);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(329, 357);
+            this.panel2.Size = new System.Drawing.Size(329, 372);
             this.panel2.TabIndex = 36;
             // 
             // lblImagen
             // 
             this.lblImagen.AutoSize = true;
-            this.lblImagen.Location = new System.Drawing.Point(117, 318);
+            this.lblImagen.Location = new System.Drawing.Point(120, 318);
             this.lblImagen.Name = "lblImagen";
             this.lblImagen.Size = new System.Drawing.Size(75, 13);
             this.lblImagen.TabIndex = 7;
@@ -262,6 +264,16 @@
             this.btnImagenAnterior.Text = "<";
             this.btnImagenAnterior.UseVisualStyleBackColor = true;
             this.btnImagenAnterior.Click += new System.EventHandler(this.btnImagenAnterior_Click);
+            // 
+            // btnEliminar
+            // 
+            this.btnEliminar.Location = new System.Drawing.Point(123, 337);
+            this.btnEliminar.Name = "btnEliminar";
+            this.btnEliminar.Size = new System.Drawing.Size(75, 23);
+            this.btnEliminar.TabIndex = 34;
+            this.btnEliminar.Text = "Eliminar";
+            this.btnEliminar.UseVisualStyleBackColor = true;
+            this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
             // 
             // frmAgregarArticulo
             // 
@@ -322,5 +334,6 @@
         private System.Windows.Forms.Label lblImagen;
         private System.Windows.Forms.Button btnSiguienteImagen;
         private System.Windows.Forms.Button btnImagenAnterior;
+        private System.Windows.Forms.Button btnEliminar;
     }
 }

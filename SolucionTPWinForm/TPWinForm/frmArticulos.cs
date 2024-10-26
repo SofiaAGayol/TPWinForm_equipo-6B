@@ -11,10 +11,7 @@ namespace TPWinForm
     public partial class frmArticulos : Form
     {
         List<Articulo> listaArticulo;
-        string rutaImagen = "https://t3.ftcdn.net/jpg/02/48/42/64/240_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg";
         private int indiceImagenActual;
-        private int imagenActual = 0;
-
         public frmArticulos()
         {
             InitializeComponent();
@@ -98,6 +95,7 @@ namespace TPWinForm
                 {
                     indiceImagenActual = 0;
                     cargarImagen(seleccionado.Imagenes[indiceImagenActual].ImagenUrl);
+                    lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + seleccionado.Imagenes.Count;
                 }
                 else
                 {
@@ -351,14 +349,68 @@ namespace TPWinForm
         private void btnAgregar_Click(object sender, EventArgs e)
         {
             frmAgregarArticulo alta = new frmAgregarArticulo();
-            alta.FormClosed += (s, args) => cargar();
-            if (alta.ShowDialog() == DialogResult.OK) // Espera que el usuario confirme la acción
+            if (alta.ShowDialog() == DialogResult.OK) 
             {
-                cargar(); // Recarga la lista de artículos solo si se añadió uno nuevo
+                cargar();
             }
         }
 
         //FIN AGREGAR ARTICULO
+
+        //EDITAR ARTICULO
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            if (dataGridView.CurrentRow != null)
+            {
+                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+
+                frmAgregarArticulo alta = new frmAgregarArticulo(seleccionado);
+                if (alta.ShowDialog() == DialogResult.OK)
+                {
+                    cargar();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un articulo para editar");
+            }
+        }
+
+        //ELIMINAR
+        private void btnEliminarLogico_Click(object sender, EventArgs e)
+        {
+            if (dataGridView.CurrentRow != null)
+            {
+                Articulo seleccionado = (Articulo)dataGridView.CurrentRow.DataBoundItem;
+                ArticuloNegocio articuloNegocio = new ArticuloNegocio();
+                try
+                {
+                    DialogResult dialogResult = MessageBox.Show("Seguro deseas Eliminar?", "Eliminar", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        articuloNegocio.Eliminar(seleccionado);
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        cargar();
+                    }
+
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("No se pudo eliminar");
+                }
+                cargar();
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un articulo para eliminar");
+            }
+        }
+
+
+
+
     }
 
 }

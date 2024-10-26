@@ -14,6 +14,8 @@ using System.Configuration;
 using System.Xml.Linq;
 using System.Collections;
 using System.Net;
+using System.Security.Policy;
+using System.Reflection;
 
 namespace TPWinForm
 {
@@ -23,14 +25,14 @@ namespace TPWinForm
         private List<Imagen> imagenesTemporales = new List<Imagen>();
         private int indiceImagenActual = 0;
 
-        public frmAgregarArticulo()
-        {
-            InitializeComponent();
-        }
-
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        public frmAgregarArticulo()
+        {
+            InitializeComponent();
         }
 
         public frmAgregarArticulo(Articulo articulo)
@@ -56,6 +58,7 @@ namespace TPWinForm
 
                 if (articulo != null)
                 {
+                    this.Text = "Modificar";
                     txtCodigo.Text = articulo.Codigo;
                     txtNombre.Text = articulo.Nombre;
                     txtDescripcion.Text = articulo.Descripcion;
@@ -63,8 +66,9 @@ namespace TPWinForm
 
                     if (articulo.Imagenes != null && articulo.Imagenes.Count > 0)
                     {
-                        txtUrlImagen.Text = articulo.Imagenes[0].ImagenUrl;
-                        CargarImagenDesdeUrl(txtUrlImagen.Text);
+                        indiceImagenActual = 0;
+                        CargarImagenDesdeUrl(articulo.Imagenes[indiceImagenActual].ImagenUrl);
+                        lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + articulo.Imagenes.Count;
                     }
 
                     if (articulo.Marca != null)
@@ -79,7 +83,7 @@ namespace TPWinForm
                 }
                 else
                 {
-                    this.Text = "+";
+                    this.Text = "Agregar";
                     articulo = new Articulo();
                 }
             }
@@ -89,7 +93,7 @@ namespace TPWinForm
             }
         }
 
-        //AGREGAR IMAGENES
+
         private void btnAgregarImagen_Click(object sender, EventArgs e)
         {
             string imageUrl = txtUrlImagen.Text.Trim();
@@ -101,11 +105,9 @@ namespace TPWinForm
                     Imagen img = new Imagen { ImagenUrl = imageUrl, IdArticulo = 0 };
                     imagenesTemporales.Add(img);
 
-                    // Mostrar la imagen en el PictureBox
                     CargarImagenDesdeUrl(imageUrl);
                     txtUrlImagen.Clear();
 
-                    // Limpiar el campo de texto después de agregar la imagen
                     txtUrlImagen.Text = "";
                     MessageBox.Show("Imagen agregada con exito");
                     CargarImagenDesdeUrl(imageUrl);
@@ -123,7 +125,7 @@ namespace TPWinForm
             }
         }
 
-        //AGREGAR ARTICULO
+
         private void btnAceptar_Click(object sender, EventArgs e)
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
@@ -148,22 +150,28 @@ namespace TPWinForm
                 articulo.Marca = (Marca)cboMarca.SelectedItem;
                 articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
 
+                articulo.Imagenes.AddRange(imagenesTemporales);
+
                 if (articulo.Id == 0)
                 {
                     negocio.agregar(articulo);
-                    int nuevoId = articulo.Id;
                     MessageBox.Show("Agregado exitosamente");
                 }
-
-                foreach (var img in imagenesTemporales)
+                else
                 {
-                    img.IdArticulo = articulo.Id;
-                    if (img.IdArticulo != 0)
-                    {
-                        imagenNegocio.agregar(img);
-                    }
-                    
+                    negocio.modificar(articulo);
+                    MessageBox.Show("Artículo actualizado exitosamente.");
                 }
+
+                //foreach (var img in imagenesTemporales)
+                //{
+                //    img.IdArticulo = articulo.Id;
+                //    if (img.IdArticulo != 0)
+                //    {
+                //        imagenNegocio.agregar(img);
+                //    }
+
+                //}
 
                 this.Close();
 
@@ -175,15 +183,23 @@ namespace TPWinForm
         }
 
 
+
+
+
         //MOSTRAR IMAGENES
         private void CargarImagenDesdeUrl(string url)
         {
             try
             {
-                if (url == null && imagenesTemporales.Count > 0)
+                if (string.IsNullOrEmpty(url) && imagenesTemporales.Count > 0)
                 {
                     url = imagenesTemporales[imagenesTemporales.Count - 1].ImagenUrl;
-                    lblImagen.Text = "Imagen " + (imagenesTemporales.Count - 1) + " de " + imagenesTemporales.Count;
+                    lblImagen.Text = "Imagen " + imagenesTemporales.Count + " de " + imagenesTemporales.Count;
+                }
+                else if (string.IsNullOrEmpty(url) && articulo.Imagenes.Count > 0)
+                {
+                    url = articulo.Imagenes[articulo.Imagenes.Count - 1].ImagenUrl;
+                    lblImagen.Text = "Imagen " + articulo.Imagenes.Count + " de " + articulo.Imagenes.Count;
                 }
 
                 if (!string.IsNullOrEmpty(url))
@@ -217,6 +233,12 @@ namespace TPWinForm
                 CargarImagenDesdeUrl(imagenesTemporales[indiceImagenActual].ImagenUrl);
                 lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + imagenesTemporales.Count;
             }
+            else if (articulo.Imagenes.Count > 0)
+            {
+                indiceImagenActual = (indiceImagenActual + 1) % articulo.Imagenes.Count;
+                CargarImagenDesdeUrl(articulo.Imagenes[indiceImagenActual].ImagenUrl);
+                lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + articulo.Imagenes.Count;
+            }
             else
             {
                 MessageBox.Show("No hay imágenes para mostrar.");
@@ -231,14 +253,50 @@ namespace TPWinForm
                 CargarImagenDesdeUrl(imagenesTemporales[indiceImagenActual].ImagenUrl);
                 lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + imagenesTemporales.Count;
             }
+            else if (articulo.Imagenes.Count > 0)
+            {
+                indiceImagenActual = (indiceImagenActual - 1) % articulo.Imagenes.Count;
+                CargarImagenDesdeUrl(articulo.Imagenes[indiceImagenActual].ImagenUrl);
+                lblImagen.Text = "Imagen " + (indiceImagenActual + 1) + " de " + articulo.Imagenes.Count;
+            }
             else
             {
                 MessageBox.Show("No hay imágenes para mostrar.");
             }
         }
-        
 
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (articulo != null)
+            {
+                if (articulo.Imagenes.Count > 1)
+                {
+                    var resultado = MessageBox.Show("¿Está seguro de que desea eliminar esta imagen?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (resultado == DialogResult.Yes)
+                    {
 
+                        articulo.Imagenes.RemoveAt(indiceImagenActual);
+                        if (articulo.Imagenes.Count > 0)
+                        {
+                            indiceImagenActual = Math.Min(indiceImagenActual, articulo.Imagenes.Count - 1);
+                            CargarImagenDesdeUrl(articulo.Imagenes[0].ImagenUrl);
+                        }
+                        else
+                        {
+                            pbxArticulo.Image = null;
+                            MessageBox.Show("No quedan imágenes. Agregue al menos una imagen antes de guardar.");
+                        }
+
+                        MessageBox.Show("Imagen eliminada. Recuerde guardar el artículo completo para guardar los cambios en las imágenes.");
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("El artículo debe tener por lo menos una imagen.");
+                }
+            }
+        }
     }
 
 
