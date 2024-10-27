@@ -133,20 +133,16 @@ namespace TPWinForm
 
             try
             {
+                if (!ValidacionesExtra())
+                    return;
+
                 if (articulo == null)
                     articulo = new Articulo();
 
                 articulo.Codigo = txtCodigo.Text;
                 articulo.Nombre = txtNombre.Text;
                 articulo.Descripcion = txtDescripcion.Text;
-
-                if (!decimal.TryParse(txtPrecio.Text, out decimal precio))
-                {
-                    MessageBox.Show("Por favor, ingrese un precio válido.");
-                    return;
-                }
-
-                articulo.Precio = precio;
+                articulo.Precio = decimal.Parse(txtPrecio.Text);
                 articulo.Marca = (Marca)cboMarca.SelectedItem;
                 articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
 
@@ -181,10 +177,6 @@ namespace TPWinForm
                 MessageBox.Show("Error al agregar el artículo: " + ex.Message);
             }
         }
-
-
-
-
 
         //MOSTRAR IMAGENES
         private void CargarImagenDesdeUrl(string url)
@@ -296,6 +288,59 @@ namespace TPWinForm
                     MessageBox.Show("El artículo debe tener por lo menos una imagen.");
                 }
             }
+        }
+
+        private bool ValidacionesExtra()
+        {
+            if (string.IsNullOrWhiteSpace(txtCodigo.Text))
+            {
+                MessageBox.Show("Por favor, ingrese un código para el artículo.");
+                txtCodigo.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtNombre.Text))
+            {
+                MessageBox.Show("Por favor, ingrese un nombre para el artículo.");
+                txtNombre.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDescripcion.Text))
+            {
+                MessageBox.Show("Por favor, ingrese una descripción para el artículo.");
+                txtDescripcion.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrecio.Text) || !decimal.TryParse(txtPrecio.Text, out _))
+            {
+                MessageBox.Show("Por favor, ingrese un precio válido para el artículo.");
+                txtPrecio.Focus();
+                return false;
+            }
+
+            if (cboMarca.SelectedItem == null)
+            {
+                MessageBox.Show("Por favor, seleccione una marca para el artículo.");
+                cboMarca.Focus();
+                return false;
+            }
+
+            if (cboCategoria.SelectedItem == null)
+            {
+                MessageBox.Show("Por favor, seleccione una categoría para el artículo.");
+                cboCategoria.Focus();
+                return false;
+            }
+
+            if (imagenesTemporales.Count == 0 && articulo.Imagenes.Count == 0)
+            {
+                MessageBox.Show("Por favor, agregue al menos una imagen antes de guardar.");
+                return false;
+            }
+
+            return true; 
         }
     }
 
