@@ -24,7 +24,7 @@ namespace TPWinForm
         private Articulo articulo = null;
         private List<Imagen> imagenesTemporales = new List<Imagen>();
         private int indiceImagenActual = 0;
-
+        
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             Close();
@@ -150,30 +150,30 @@ namespace TPWinForm
                 articulo.Marca = (Marca)cboMarca.SelectedItem;
                 articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
 
-                articulo.Imagenes.AddRange(imagenesTemporales);
+                articulo.Imagenes.AddRange(imagenesTemporales);              
 
-                if (articulo.Id == 0)
+                if (articulo.Imagenes.Count > 0)
                 {
-                    negocio.agregar(articulo);
-                    MessageBox.Show("Agregado exitosamente");
+                    if (articulo.Id == 0)
+                    {
+                        negocio.agregar(articulo);
+                        MessageBox.Show("Agregado exitosamente");
+                    }
+                    else
+                    {
+                        negocio.modificar(articulo);
+                        MessageBox.Show("Artículo actualizado exitosamente.");
+                    }
+                    this.Close();
+                    
                 }
                 else
                 {
-                    negocio.modificar(articulo);
-                    MessageBox.Show("Artículo actualizado exitosamente.");
+                    pbxArticulo.Image = null;
+                    MessageBox.Show("Agregue al menos una imagen antes de guardar.");
                 }
 
-                //foreach (var img in imagenesTemporales)
-                //{
-                //    img.IdArticulo = articulo.Id;
-                //    if (img.IdArticulo != 0)
-                //    {
-                //        imagenNegocio.agregar(img);
-                //    }
-
-                //}
-
-                this.Close();
+                
 
             }
             catch (Exception ex)

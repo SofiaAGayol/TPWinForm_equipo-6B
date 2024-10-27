@@ -12,6 +12,25 @@ namespace TPWinForm
     {
         List<Articulo> listaArticulo;
         private int indiceImagenActual;
+
+        private void articulosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmAgregarArticulo frmAgregarArticulo = new frmAgregarArticulo();
+            frmAgregarArticulo.ShowDialog();
+        }
+
+        private void categoriasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmCategorias frmCategorias = new frmCategorias();
+            frmCategorias.ShowDialog();
+        }
+
+        private void marcasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmMarcas frmMarcas = new frmMarcas();
+            frmMarcas.ShowDialog();
+        }
+
         public frmArticulos()
         {
             InitializeComponent();
@@ -341,11 +360,8 @@ namespace TPWinForm
 
         }
 
-        //FIN FILTRO
-
 
         //AGREGAR ARTICULO
-
         private void btnAgregar_Click(object sender, EventArgs e)
         {
             frmAgregarArticulo alta = new frmAgregarArticulo();
@@ -353,9 +369,8 @@ namespace TPWinForm
             {
                 cargar();
             }
+            cargar();
         }
-
-        //FIN AGREGAR ARTICULO
 
         //EDITAR ARTICULO
         private void btnModificar_Click(object sender, EventArgs e)
@@ -374,6 +389,7 @@ namespace TPWinForm
             {
                 MessageBox.Show("Seleccione un articulo para editar");
             }
+            cargar();
         }
 
         //ELIMINAR
